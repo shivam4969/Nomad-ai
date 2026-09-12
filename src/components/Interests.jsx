@@ -38,7 +38,15 @@ function Interests() {
                 {interests.map((interest) => (
                     <button
                         key={interest}
-                        onClick={() => handleSelect(interest)}
+                        onClick={() => {
+                            handleSelect(interest);
+                            setTripData(prev =>({
+                                ...prev,
+                                interests: selectedInterests
+                            })
+                        )}
+                            
+                        }
                         className={`m-1 px-3 py-2 rounded-full ${
                             selectedInterests.includes(interest)
                                 ? "bg-green-600 text-white"

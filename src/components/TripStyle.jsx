@@ -1,4 +1,6 @@
+import { preview } from "vite";
 import Dropdown from "./Dropdown";
+import TravelStyle from "./TravelStyle";
 
 const tripStyles = [
     "Solo",
@@ -12,7 +14,12 @@ function TripStyle() {
             <h2>Choose your trip style</h2>
             <Dropdown 
                 options={tripStyles}
-                onSelect={(value) => console.log(value)}
+                onSelect={(value) =>  
+                    setTripData(prev => ({
+                        ...prev,
+                 tripStyle: value
+                }))
+                }
             />
         </div>
     );

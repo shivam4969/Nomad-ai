@@ -1,4 +1,5 @@
 import Dropdown from "./Dropdown";
+import { useTrip } from "../context/TripContext";
 
 const travelStyles = [
     "Relaxed",
@@ -7,11 +8,17 @@ const travelStyles = [
 ];
 
 function TravelStyle() {
+    const { tripData, setTripData } = useTrip();
     return (
         <Dropdown
             options={travelStyles}
             placeholder="Travel Style"
-            onSelect={(value) => console.log(value)}
+            onSelect={(value) => {
+                setTripData(prev => ({
+                        ...prev,
+                 travelStyle: value
+                }));
+            }}
         />
     );
 }

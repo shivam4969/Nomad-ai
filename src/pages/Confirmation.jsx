@@ -3,8 +3,12 @@ import PrimaryButton from "../components/PrimaryButton";
 import TravelStyle from "../components/TravelStyle";
 import TripStyle from "../components/TripStyle";
 import Interests from "../components/Interests";
+import { useTrip } from "../context/TripContext";
 
 function Confirmation() {
+    const { tripData } = useTrip();
+
+    console.log("FINAL TRIP DATA:", tripData);
     return (
         <div className="min-h-screen bg-[#DDEFEA]">
 

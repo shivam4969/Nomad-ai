@@ -27,7 +27,13 @@ function DestinationIn() {
             />
             <Dropdown 
                 options={filteredDestinations}
-                onSelect={setDestination}
+                onSelect={(value) => {
+                    setTripData(prev => ({
+                        ...prev,
+                        destination: value
+                    }))
+            
+                }}
             />
         </div>
     )

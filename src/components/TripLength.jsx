@@ -22,7 +22,12 @@ function TripLength() {
             <h2>Choose your trip length</h2>
             <Dropdown 
                 options={tripLengths}
-                onSelect={handleSelect}
+                onSelect={(value) =>{
+                    setTripData(prev =>({
+                        ...prev,
+                        duration: value
+                    }));
+                }}
             />
         </div>
     );
