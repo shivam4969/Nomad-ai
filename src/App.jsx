@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Confirmation from "./pages/Confirmation";
+import Itinerary from "./pages/Itinerary";
 import Backendtest from "./pages/Backendtest";
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/test" element={<Backendtest />} />
+            <Route path="/itinerary" element={<Itinerary/>}/>
         </Routes>
     );
 }

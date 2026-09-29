@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useTrip } from "../context/TripContext";
 const interests = [
     "Food & Drink",
     "Culture & History",
@@ -12,9 +12,16 @@ const interests = [
     "Technology & Innovation",
     "Family-Friendly Activities"
 ];
-
+function handleSelect(interest) {
+  const updated = selectedInterests.includes(interest)
+    ? selectedInterests.filter(i => i !== interest)
+    : [...selectedInterests, interest];
+  setSelectedInterests(updated);
+  setTripData(prev => ({ ...prev, interests: updated })); // ← use `updated`, not `selectedInterests`
+}
 function Interests() {
     const [selectedInterests, setSelectedInterests] = useState([]);
+    const { setTripData } = useTrip();
 
     function handleSelect(interest) {
         if (selectedInterests.includes(interest)) {

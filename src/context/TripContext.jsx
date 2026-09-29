@@ -5,10 +5,12 @@ const TripContext = createContext();
 export function TripProvider({ children }) {
     const [tripData, setTripData] = useState({
         destination: "",
-        duration: "",
+        startDate: "",
+        endDate: "",
         travelStyle: "",
         tripStyle: "",
-        interests: []
+        interests: [],
+        budget: 1000,
     });
 
     return (
