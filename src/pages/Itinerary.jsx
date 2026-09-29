@@ -47,7 +47,7 @@ function StatPill({ icon, label, value }) {
     );
 }
 
-// ── Empty / error state
+// ── Empty state
 function EmptyState({ navigate }) {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-[#F5FAF8] px-6 text-center">
@@ -63,14 +63,7 @@ function EmptyState({ navigate }) {
             </p>
             <button
                 onClick={() => navigate("/dashboard")}
-                className="
-                    group mt-8 inline-flex items-center gap-2.5
-                    rounded-[13px] bg-[#3DB896] px-6 py-3.5
-                    text-sm font-semibold text-white
-                    transition-all duration-200
-                    hover:-translate-y-0.5 hover:bg-[#2A9478]
-                    hover:shadow-[0_8px_28px_rgba(61,184,150,0.35)]
-                "
+                className="group mt-8 inline-flex items-center gap-2.5 rounded-[13px] bg-[#3DB896] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#2A9478] hover:shadow-[0_8px_28px_rgba(61,184,150,0.35)]"
             >
                 Plan a trip
                 <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -79,11 +72,11 @@ function EmptyState({ navigate }) {
     );
 }
 
-// ── Activity card with timeline dot
-function ActivityCard({ activity, index, isLast }) {
+// ── Activity card with timeline connector
+function ActivityCard({ activity, isLast }) {
     return (
         <div className="flex gap-4">
-            {/* Timeline */}
+            {/* Timeline dot + line */}
             <div className="flex flex-col items-center">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#DDEEE9] bg-white text-sm shadow-sm">
                     {categoryIcon(activity.category)}
@@ -92,20 +85,11 @@ function ActivityCard({ activity, index, isLast }) {
             </div>
 
             {/* Content */}
-            <div
-                className={`
-                    mb-4 flex-1 rounded-[14px] border border-[#DDEEE9] bg-[#F9FCFB] p-4
-                    transition-all duration-200 hover:border-[#3DB896]/40
-                    hover:bg-white hover:shadow-[0_4px_20px_rgba(15,31,27,0.06)]
-                    ${isLast ? "mb-0" : ""}
-                `}
-            >
+            <div className={`flex-1 rounded-[14px] border border-[#DDEEE9] bg-[#F9FCFB] p-4 transition-all duration-200 hover:border-[#3DB896]/40 hover:bg-white hover:shadow-[0_4px_20px_rgba(15,31,27,0.06)] ${isLast ? "mb-0" : "mb-4"}`}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex-1">
                         <p className="text-xs font-semibold text-[#3DB896]">{activity.time}</p>
-                        <h3 className="mt-0.5 text-base font-semibold text-[#0F1F1B]">
-                            {activity.name}
-                        </h3>
+                        <h3 className="mt-0.5 text-base font-semibold text-[#0F1F1B]">{activity.name}</h3>
                     </div>
                     {activity.category && (
                         <span className="shrink-0 rounded-full border border-[rgba(61,184,150,0.2)] bg-[rgba(61,184,150,0.08)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#2A9478]">
@@ -113,19 +97,15 @@ function ActivityCard({ activity, index, isLast }) {
                         </span>
                     )}
                 </div>
-
                 {activity.description && (
-                    <p className="mt-2 text-sm leading-relaxed text-[#6B8880]">
-                        {activity.description}
-                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-[#6B8880]">{activity.description}</p>
                 )}
             </div>
         </div>
     );
 }
 
-
-// ── Budget distribution chart (R-derived percentages, rendered in-browser)
+// ── Budget chart (R-derived percentages, rendered in-browser)
 const BUDGET_DISTRIBUTION = [
     { category: "Accommodation", pct: 0.35, icon: "🏨", color: "#3DB896" },
     { category: "Food & Drink",  pct: 0.25, icon: "🍜", color: "#2A9478" },
@@ -156,17 +136,16 @@ function BudgetChart({ budget }) {
                 <span className="text-sm text-[#A8BFBA]">suggested allocation</span>
             </div>
 
-            {/* Bar chart */}
             <div className="mt-6 space-y-3">
                 {data.map(({ category, amount, pct, icon, color }) => (
                     <div key={category}>
-                        <div className="mb-1 flex items-center justify-between">
+                        <div className="mb-1.5 flex items-center justify-between">
                             <span className="flex items-center gap-1.5 text-sm font-medium text-[#2E4A44]">
                                 <span>{icon}</span>{category}
                             </span>
                             <div className="flex items-center gap-2">
                                 <span className="text-xs text-[#A8BFBA]">{Math.round(pct * 100)}%</span>
-                                <span className="min-w-[60px] text-right text-sm font-semibold text-[#0F1F1B]">
+                                <span className="min-w-[64px] text-right text-sm font-semibold text-[#0F1F1B]">
                                     ${amount.toLocaleString()}
                                 </span>
                             </div>
@@ -174,10 +153,7 @@ function BudgetChart({ budget }) {
                         <div className="h-2 w-full overflow-hidden rounded-full bg-[#F0F7F5]">
                             <div
                                 className="h-full rounded-full transition-all duration-700"
-                                style={{
-                                    width: `${(amount / max) * 100}%`,
-                                    background: color,
-                                }}
+                                style={{ width: `${(amount / max) * 100}%`, background: color }}
                             />
                         </div>
                     </div>
@@ -185,7 +161,7 @@ function BudgetChart({ budget }) {
             </div>
 
             <p className="mt-5 text-xs text-[#A8BFBA]">
-                * Percentages are based on average travel cost distributions. Adjust to your spending style.
+                * Based on average travel cost distributions. Adjust to your spending style.
             </p>
         </section>
     );
@@ -197,9 +173,8 @@ function Itinerary() {
     const navigate  = useNavigate();
     const itinerary = location.state;
 
-    const [openDays, setOpenDays] = useState(new Set([1])); // first day open by default
-    const [mounted,  setMounted]  = useState(false);
-    const [copied,   setCopied]   = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const [copied,  setCopied]  = useState(false);
 
     useEffect(() => {
         const t = setTimeout(() => setMounted(true), 60);
@@ -208,12 +183,17 @@ function Itinerary() {
 
     if (!itinerary) return <EmptyState navigate={navigate} />;
 
-    // Normalise days — guarantee every day has a .day number (backend may omit it)
-    const normalisedDays = (itinerary.days ?? []).map((d, i) => ({
+    // ── Normalise days: guarantee every day has a numeric .day field
+    // Fixes accordion when backend returns [{ title, activities }] without a day number
+    const days = (itinerary.days ?? []).map((d, i) => ({
         ...d,
         day: d.day ?? i + 1,
     }));
-    const totalDays = normalisedDays.length;
+    const totalDays = days.length;
+
+    // ── Accordion state — initialise with day 1 open
+    const [openDays, setOpenDays] = useState(() => new Set([days[0]?.day ?? 1]));
+    const allOpen = openDays.size === totalDays;
 
     function toggleDay(dayNum) {
         setOpenDays(prev => {
@@ -224,30 +204,23 @@ function Itinerary() {
     }
 
     function toggleAll() {
-        if (openDays.size === totalDays) {
-            setOpenDays(new Set());
-        } else {
-            setOpenDays(new Set(normalisedDays.map(d => d.day)));
-        }
+        setOpenDays(allOpen ? new Set() : new Set(days.map(d => d.day)));
     }
 
+    // ── Copy to clipboard
     function handleCopy() {
-        const text = normalisedDays.map(day =>
-            `Day ${day.day}: ${day.title}\n` +
-            day.activities?.map(a => `  ${a.time} — ${a.name}`).join("\n")
+        const text = days.map(d =>
+            `Day ${d.day}: ${d.title ?? "Untitled"}\n` +
+            (d.activities ?? []).map(a => `  ${a.time ?? ""} — ${a.name ?? ""}`).join("\n")
         ).join("\n\n");
-        navigator.clipboard.writeText(text ?? "").then(() => {
+        navigator.clipboard.writeText(text).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         });
     }
 
-    function handlePrint() {
-        window.print();
-    }
-
-    // Derive trip duration string
-    // startDate/endDate come from finalData merged in Confirmation's navigate call
+    // ── Duration label
+    // startDate/endDate come from { ...finalData, ...data } merged in Confirmation
     const duration = (() => {
         if (itinerary.startDate && itinerary.endDate) {
             const nights = Math.round(
@@ -258,30 +231,18 @@ function Itinerary() {
         return totalDays > 0 ? `${totalDays} day${totalDays > 1 ? "s" : ""}` : null;
     })();
 
-    const allOpen = openDays.size === totalDays;
-
     return (
-        <div
-            className={`
-                min-h-screen bg-[#F5FAF8] text-[#0F1F1B]
-                transition-opacity duration-500
-                ${mounted ? "opacity-100" : "opacity-0"}
-            `}
-        >
+        <div className={`min-h-screen bg-[#F5FAF8] text-[#0F1F1B] transition-opacity duration-500 ${mounted ? "opacity-100" : "opacity-0"}`}>
+
             {/* ── Hero header ── */}
             <header
                 className="relative overflow-hidden"
-                style={{
-                    background: "linear-gradient(160deg, #1c3d36 0%, #2a5248 55%, #1e4038 100%)",
-                }}
+                style={{ background: "linear-gradient(160deg, #1c3d36 0%, #2a5248 55%, #1e4038 100%)" }}
             >
-                {/* ambient glows */}
                 <div style={{ position:"absolute", top:"-80px", right:"-60px", width:"360px", height:"360px", background:"radial-gradient(circle, rgba(61,184,150,0.18) 0%, transparent 65%)", pointerEvents:"none" }} />
                 <div style={{ position:"absolute", bottom:"-100px", left:"-40px", width:"280px", height:"280px", background:"radial-gradient(circle, rgba(61,184,150,0.10) 0%, transparent 65%)", pointerEvents:"none" }} />
 
                 <div className="relative z-10 mx-auto max-w-5xl px-6 pb-10 pt-20 sm:pb-14 sm:pt-24">
-
-                    {/* Back */}
                     <button
                         onClick={() => navigate("/dashboard")}
                         className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-white/50 transition-colors hover:text-white/90"
@@ -300,7 +261,7 @@ function Itinerary() {
                         {itinerary.destination}
                     </h1>
 
-                    {/* Trip stat pills */}
+                    {/* Stat pills — only show if data is present (fixed by Confirmation merge) */}
                     <div className="mt-6 flex flex-wrap gap-2">
                         <StatPill icon="📅" label="Duration" value={duration} />
                         <StatPill icon="🧭" label="Style"    value={itinerary.travelStyle} />
@@ -310,7 +271,6 @@ function Itinerary() {
                         )}
                     </div>
 
-                    {/* Action row */}
                     <div className="mt-8 flex flex-wrap items-center gap-3">
                         <button
                             onClick={handleCopy}
@@ -319,7 +279,7 @@ function Itinerary() {
                             {copied ? "✓ Copied!" : "📋 Copy itinerary"}
                         </button>
                         <button
-                            onClick={handlePrint}
+                            onClick={() => window.print()}
                             className="inline-flex items-center gap-2 rounded-[10px] border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20"
                         >
                             🖨 Print
@@ -336,7 +296,7 @@ function Itinerary() {
 
             <main className="mx-auto max-w-5xl px-5 py-10 sm:px-6 sm:py-14">
 
-                {/* ── Day accordion controls ── */}
+                {/* ── Accordion controls ── */}
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#A8BFBA]">
                         {totalDays} day{totalDays !== 1 ? "s" : ""} planned
@@ -351,111 +311,66 @@ function Itinerary() {
 
                 {/* ── Day cards ── */}
                 <div className="space-y-3">
-                    {normalisedDays.map((day, dayIdx) => {
-                        const isOpen = openDays.has(day.day);
-                        const activityCount = day.activities?.length ?? 0;
+                    {days.map((day, dayIdx) => {
+                        const isOpen       = openDays.has(day.day);
+                        const actCount     = day.activities?.length ?? 0;
 
                         return (
                             <section
                                 key={day.day}
-                                className={`
-                                    overflow-hidden rounded-[20px] border bg-white
-                                    shadow-[0_2px_8px_rgba(15,31,27,0.04)]
-                                    transition-all duration-200
-                                    ${isOpen
-                                        ? "border-[#3DB896]/30 shadow-[0_8px_32px_rgba(61,184,150,0.10)]"
-                                        : "border-[#DDEEE9] hover:border-[#3DB896]/20"
-                                    }
-                                `}
-                                style={{
-                                    animation: `fadeUp 0.4s ${dayIdx * 60}ms both`,
-                                }}
+                                className={`overflow-hidden rounded-[20px] border bg-white shadow-[0_2px_8px_rgba(15,31,27,0.04)] transition-all duration-200 ${isOpen ? "border-[#3DB896]/30 shadow-[0_8px_32px_rgba(61,184,150,0.10)]" : "border-[#DDEEE9] hover:border-[#3DB896]/20"}`}
+                                style={{ animation: `fadeUp 0.4s ${dayIdx * 60}ms both` }}
                             >
-                                {/* ── Accordion header ── */}
+                                {/* Header */}
                                 <button
                                     type="button"
                                     aria-expanded={isOpen}
                                     onClick={() => toggleDay(day.day)}
                                     className="flex w-full items-center gap-4 px-6 py-5 text-left sm:px-8"
                                 >
-                                    {/* Day number badge */}
-                                    <div
-                                        className={`
-                                            flex h-12 w-12 shrink-0 flex-col items-center justify-center
-                                            rounded-[12px] transition-all duration-200
-                                            ${isOpen
-                                                ? "bg-[#3DB896] text-white shadow-[0_4px_16px_rgba(61,184,150,0.3)]"
-                                                : "bg-[#F0F7F5] text-[#3DB896]"
-                                            }
-                                        `}
-                                    >
+                                    <div className={`flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-[12px] transition-all duration-200 ${isOpen ? "bg-[#3DB896] text-white shadow-[0_4px_16px_rgba(61,184,150,0.3)]" : "bg-[#F0F7F5] text-[#3DB896]"}`}>
                                         <span className="text-[10px] font-semibold uppercase leading-none opacity-70">Day</span>
                                         <span className="text-lg font-bold leading-tight">{day.day}</span>
                                     </div>
 
-                                    {/* Title */}
-                                    <div className="flex-1 min-w-0">
-                                        <h2 className={`
-                                            truncate text-lg font-semibold leading-snug tracking-[-0.01em]
-                                            transition-colors duration-200
-                                            ${isOpen ? "text-[#0F1F1B]" : "text-[#2E4A44]"}
-                                        `}>
-                                            {day.title}
+                                    <div className="min-w-0 flex-1">
+                                        <h2 className={`truncate text-lg font-semibold leading-snug tracking-[-0.01em] transition-colors duration-200 ${isOpen ? "text-[#0F1F1B]" : "text-[#2E4A44]"}`}>
+                                            {day.title ?? `Day ${day.day}`}
                                         </h2>
                                         <p className="mt-0.5 text-xs text-[#A8BFBA]">
-                                            {activityCount} activit{activityCount !== 1 ? "ies" : "y"}
+                                            {actCount} activit{actCount !== 1 ? "ies" : "y"}
                                             {day.activities?.[0]?.time && ` · starts ${day.activities[0].time}`}
                                         </p>
                                     </div>
 
-                                    {/* Activity preview dots (collapsed only) */}
-                                    {!isOpen && activityCount > 0 && (
+                                    {/* Emoji preview when collapsed */}
+                                    {!isOpen && actCount > 0 && (
                                         <div className="hidden shrink-0 items-center gap-1 sm:flex">
                                             {day.activities.slice(0, 4).map((a, i) => (
-                                                <span key={i} className="text-sm" title={a.name}>
-                                                    {categoryIcon(a.category)}
-                                                </span>
+                                                <span key={i} className="text-sm" title={a.name}>{categoryIcon(a.category)}</span>
                                             ))}
-                                            {activityCount > 4 && (
-                                                <span className="text-xs text-[#A8BFBA]">+{activityCount - 4}</span>
-                                            )}
+                                            {actCount > 4 && <span className="text-xs text-[#A8BFBA]">+{actCount - 4}</span>}
                                         </div>
                                     )}
 
-                                    {/* Chevron */}
-                                    <div
-                                        className={`
-                                            flex h-8 w-8 shrink-0 items-center justify-center
-                                            rounded-full transition-all duration-300
-                                            ${isOpen
-                                                ? "bg-[rgba(61,184,150,0.12)] text-[#3DB896] rotate-180"
-                                                : "bg-[#F0F7F5] text-[#A8BFBA]"
-                                            }
-                                        `}
-                                    >
+                                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${isOpen ? "bg-[rgba(61,184,150,0.12)] text-[#3DB896] rotate-180" : "bg-[#F0F7F5] text-[#A8BFBA]"}`}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                             <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </div>
                                 </button>
 
-                                {/* ── Accordion body ── */}
-                                <div
-                                    className={`
-                                        grid transition-all duration-300 ease-in-out
-                                        ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}
-                                    `}
-                                >
+                                {/* Body */}
+                                <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                                     <div className="overflow-hidden">
-                                        <div className="border-t border-[#DDEEE9] px-6 pt-6 pb-6 sm:px-8 sm:pb-8">
-                                            {day.activities?.length > 0 ? (
+                                        <div className="border-t border-[#DDEEE9] px-6 pb-6 pt-6 sm:px-8 sm:pb-8">
+                                            {actCount > 0 ? (
                                                 <div>
                                                     {day.activities.map((activity, i) => (
                                                         <ActivityCard
                                                             key={`${day.day}-${i}`}
                                                             activity={activity}
-                                                            index={i}
-                                                            isLast={i === day.activities.length - 1}
+                                                            isLast={i === actCount - 1}
                                                         />
                                                     ))}
                                                 </div>
@@ -470,7 +385,9 @@ function Itinerary() {
                     })}
                 </div>
 
-                {/* ── Special Events ── always rendered so you can see if data is missing */}
+                {/* ── Special Events ──
+                    Always rendered. Shows a helpful empty state if backend didn't return the field.
+                    Fix: make sure your server prompt includes `specialEvents` in the required JSON shape. */}
                 <section className="mt-12">
                     <div className="mb-5">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#3DB896]">
@@ -484,14 +401,15 @@ function Itinerary() {
                         </h2>
                     </div>
 
-                    {/* No events returned by backend */}
-                    {(!itinerary.specialEvents || itinerary.specialEvents.length === 0) ? (
+                    {!itinerary.specialEvents || itinerary.specialEvents.length === 0 ? (
+                        /* Empty state — visible so you know the backend isn't returning this field */
                         <div className="rounded-[16px] border border-dashed border-[#DDEEE9] bg-white px-6 py-8 text-center">
                             <p className="text-2xl">🎭</p>
                             <p className="mt-2 text-sm font-medium text-[#2E4A44]">No special events found</p>
                             <p className="mt-1 text-xs leading-relaxed text-[#A8BFBA]">
-                                Your backend didn't return a <code className="rounded bg-[#F0F7F5] px-1 py-0.5 font-mono text-[#3DB896]">specialEvents</code> field.
-                                Add it to your server prompt to populate this section.
+                                Ask your backend to include a{" "}
+                                <code className="rounded bg-[#F0F7F5] px-1 py-0.5 font-mono text-[#3DB896]">specialEvents</code>{" "}
+                                array in its response to populate this section.
                             </p>
                         </div>
                     ) : (
@@ -518,9 +436,7 @@ function Itinerary() {
                                                 )}
                                             </div>
                                             {event.description && (
-                                                <p className="mt-1.5 text-sm leading-relaxed text-[#6B8880]">
-                                                    {event.description}
-                                                </p>
+                                                <p className="mt-1.5 text-sm leading-relaxed text-[#6B8880]">{event.description}</p>
                                             )}
                                         </div>
                                     </div>
@@ -533,13 +449,13 @@ function Itinerary() {
                 {/* ── Budget chart ── */}
                 <BudgetChart budget={itinerary.budget} />
 
-                {/* ── Footer brand ── */}
+                {/* ── Footer ── */}
                 <div className="mt-16 flex flex-col items-center gap-2 text-center">
                     <div className="h-px w-16 bg-[#DDEEE9]" />
                     <p className="mt-4 text-xs text-[#A8BFBA]">Crafted for you by</p>
                     <a
                         href="/"
-                        className="font-serif text-lg font-normal tracking-[-0.02em] text-[#0F1F1B] no-underline"
+                        className="text-lg font-normal tracking-[-0.02em] text-[#0F1F1B] no-underline"
                         style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
                     >
                         nomad<span className="text-[#3DB896]">.</span>ai

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useTrip } from "../context/TripContext";
 
-// ── Inline style selector — replaces <TravelStyle> and <TripStyle> dropdowns
+// ── Style selector
 function StyleSelector({ label, options, value, onChange }) {
     return (
         <div>
@@ -31,10 +31,7 @@ function StyleSelector({ label, options, value, onChange }) {
                                     flex h-[18px] w-[18px] shrink-0 items-center justify-center
                                     rounded-full border-2 text-[9px] text-white
                                     transition-all duration-200
-                                    ${selected
-                                        ? "border-[#3DB896] bg-[#3DB896]"
-                                        : "border-[#DDEEE9]"
-                                    }
+                                    ${selected ? "border-[#3DB896] bg-[#3DB896]" : "border-[#DDEEE9]"}
                                 `}
                             >
                                 {selected && "✓"}
@@ -47,7 +44,7 @@ function StyleSelector({ label, options, value, onChange }) {
     );
 }
 
-// ── Interests
+// ── Interest picker
 const INTERESTS = [
     { label: "Food & Drink",               icon: "🍜" },
     { label: "Culture & History",          icon: "🏛"  },
@@ -68,7 +65,6 @@ function InterestPicker({ value, onChange }) {
             : [...value, label];
         onChange(next);
     }
-
     return (
         <div className="flex flex-wrap gap-2">
             {INTERESTS.map(({ label, icon }) => {
@@ -96,7 +92,7 @@ function InterestPicker({ value, onChange }) {
     );
 }
 
-// ── Animated loading screen
+// ── Loading screen
 const LOAD_STEPS = [
     { icon: "🗺", text: "Mapping your destination" },
     { icon: "⭐", text: "Matching your interests"  },
@@ -106,82 +102,93 @@ const LOAD_STEPS = [
 
 function LoadingScreen() {
     const [visibleSteps, setVisibleSteps] = useState([]);
+    const [activeStep,   setActiveStep]   = useState(-1);
 
     useEffect(() => {
+        // Reveal each step with a staggered fade-in
         LOAD_STEPS.forEach((_, i) => {
-            const t = setTimeout(() => {
-                setVisibleSteps((prev) => [...prev, i]);
-            }, i * 700 + 300);
-            return () => clearTimeout(t);
+            const tShow   = setTimeout(() => setVisibleSteps(p => [...p, i]),  i * 900 + 400);
+            const tActive = setTimeout(() => setActiveStep(i),                  i * 900 + 400);
+            return () => { clearTimeout(tShow); clearTimeout(tActive); };
         });
     }, []);
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#DDEFEA] px-6 text-center">
 
-            <span className="mb-8 block text-6xl" style={{ animation: "globeSpin 2s linear infinite" }}>
+            {/* Globe — smooth bounce (translateY only, no rotation jank) */}
+            <div style={{ animation: "globeBounce 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
+                 className="mb-10 text-6xl select-none">
                 🌍
-            </span>
+            </div>
 
-            <h1 className="font-serif text-[clamp(28px,5vw,40px)] font-normal tracking-[-0.02em] text-[#0F1F1B]">
+            <h1
+                className="text-[clamp(26px,5vw,38px)] font-normal tracking-[-0.025em] text-[#0F1F1B]"
+                style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
+            >
                 Building your adventure…
             </h1>
 
-            <p className="mx-auto mt-3 max-w-sm text-[15px] leading-relaxed text-[#6B8880]">
-                We're weaving together experiences around the way you want to travel.
+            <p className="mx-auto mt-3 max-w-xs text-[14px] leading-relaxed text-[#6B8880]">
+                Weaving together experiences around the way you want to travel.
             </p>
 
-            <div className="mt-8 h-[3px] w-48 overflow-hidden rounded-full bg-white/50">
+            {/* Single slim progress bar — removed dots */}
+            <div className="relative mt-8 h-[3px] w-56 overflow-hidden rounded-full bg-white/40">
                 <div
-                    className="h-full rounded-full bg-[#3DB896]"
-                    style={{ animation: "loaderBar 1.8s ease-in-out infinite" }}
+                    className="absolute inset-y-0 left-0 rounded-full bg-[#3DB896]"
+                    style={{ animation: "shimmerBar 1.6s ease-in-out infinite" }}
                 />
             </div>
 
-            <div className="mt-5 flex gap-1.5">
-                {[0, 1, 2].map((i) => (
-                    <div
-                        key={i}
-                        className="h-[7px] w-[7px] rounded-full bg-[#3DB896]"
-                        style={{ animation: `dotPulse 1.2s ease-in-out ${i * 0.2}s infinite` }}
-                    />
-                ))}
-            </div>
-
-            <div className="mt-10 flex w-full max-w-xs flex-col gap-2.5">
-                {LOAD_STEPS.map(({ icon, text }, i) => (
-                    <div
-                        key={i}
-                        className={`
-                            flex items-center gap-3 rounded-[10px]
-                            bg-white/50 px-4 py-2.5 text-sm font-medium
-                            transition-all duration-500
-                            ${visibleSteps.includes(i)
-                                ? "opacity-100 translate-y-0 text-[#2A9478]"
-                                : "opacity-0 translate-y-2 text-[#6B8880]"
-                            }
-                        `}
-                    >
-                        <span className="text-base">{icon}</span>
-                        {text}
-                    </div>
-                ))}
+            {/* Step list — slides in one by one */}
+            <div className="mt-10 flex w-full max-w-[260px] flex-col gap-2">
+                {LOAD_STEPS.map(({ icon, text }, i) => {
+                    const visible = visibleSteps.includes(i);
+                    const active  = activeStep === i;
+                    return (
+                        <div
+                            key={i}
+                            className="flex items-center gap-3 rounded-[10px] px-4 py-2.5 text-sm font-medium"
+                            style={{
+                                background:  visible ? "rgba(255,255,255,0.55)" : "transparent",
+                                opacity:     visible ? 1 : 0,
+                                transform:   visible ? "translateY(0)" : "translateY(6px)",
+                                transition:  "opacity 0.5s ease, transform 0.5s ease, background 0.3s ease",
+                                color:       active  ? "#1C6B54" : "#6B8880",
+                            }}
+                        >
+                            {/* Animated checkmark when done, spinner when active */}
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+                                {active
+                                    ? <span style={{ animation: "spinStep 0.8s linear infinite", display:"inline-block" }}>⟳</span>
+                                    : visible && activeStep > i
+                                        ? <span className="text-[#3DB896]">✓</span>
+                                        : <span>{icon}</span>
+                                }
+                            </span>
+                            {text}
+                        </div>
+                    );
+                })}
             </div>
 
             <style>{`
-                @keyframes globeSpin {
-                    0%   { transform: rotateY(0deg) scale(1); }
-                    50%  { transform: rotateY(180deg) scale(1.06); }
-                    100% { transform: rotateY(360deg) scale(1); }
+                @keyframes globeBounce {
+                    0%,100% { transform: translateY(0px);   }
+                    30%     { transform: translateY(-18px);  }
+                    50%     { transform: translateY(-22px);  }
+                    70%     { transform: translateY(-6px);   }
+                    85%     { transform: translateY(-10px);  }
                 }
-                @keyframes loaderBar {
-                    0%   { width: 0%;  margin-left: 0%; }
-                    50%  { width: 70%; margin-left: 15%; }
-                    100% { width: 0%;  margin-left: 100%; }
+                @keyframes shimmerBar {
+                    0%   { left: -60%; width: 40%; }
+                    60%  { left: 80%;  width: 60%; }
+                    100% { left: 120%; width: 40%; }
                 }
-                @keyframes dotPulse {
-                    0%, 100% { opacity: 0.3; transform: scale(1); }
-                    50%      { opacity: 1;   transform: scale(1.2); }
+                @keyframes spinStep {
+                    from { transform: rotate(0deg); }
+                    to   { transform: rotate(360deg); }
                 }
             `}</style>
         </div>
@@ -206,9 +213,9 @@ function Confirmation() {
     }, []);
 
     function validate() {
-        if (!travelStyle)           { setError("Please choose a travel pace.");             return false; }
+        if (!travelStyle)           { setError("Please choose a travel pace.");              return false; }
         if (!tripStyle)             { setError("Please choose who you're travelling with."); return false; }
-        if (interests.length === 0) { setError("Pick at least one interest.");              return false; }
+        if (interests.length === 0) { setError("Pick at least one interest.");               return false; }
         setError("");
         return true;
     }
@@ -218,8 +225,8 @@ function Confirmation() {
 
         const finalData = { ...tripData, travelStyle, tripStyle, interests };
         setTripData(finalData);
-
         setLoading(true);
+
         try {
             const response = await fetch("http://localhost:3000/api/itinerary", {
                 method: "POST",

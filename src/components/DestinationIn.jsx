@@ -117,15 +117,18 @@ function DestinationIn() {
 
             {/* ── Input ── */}
             <div className="relative">
-                {/* Search / check icon */}
-                <span
-                    className={`
-                        pointer-events-none absolute left-4 top-1/2 -translate-y-1/2
-                        text-base transition-all duration-200
-                        ${confirmed ? "text-[#3DB896]" : "text-[#A8BFBA]"}
-                    `}
-                >
-                    {confirmed ? "✓" : "✈"}
+                {/* Search / check icon — SVG so size is always exact, no emoji rendering quirk */}
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 flex h-4 w-4 items-center justify-center">
+                    {confirmed ? (
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="6.5" stroke="#3DB896" strokeWidth="1.2"/>
+                            <path d="M4 7l2.2 2.2L10 5" stroke="#3DB896" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 3L3 10.5l6.75 2.25L12 21l3-6.75L21 3z" stroke="#A8BFBA" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    )}
                 </span>
 
                 <input
@@ -135,13 +138,13 @@ function DestinationIn() {
                     onChange={handleChange}
                     onFocus={() => query && !confirmed && setIsOpen(true)}
                     onKeyDown={handleKeyDown}
-                    placeholder="e.g. Kyoto, Japan"
+                    placeholder="          Kyoto, Japan"
                     autoComplete="off"
                     aria-autocomplete="list"
                     aria-expanded={showDropdown}
                     aria-controls="dest-listbox"
                     className={`
-                        w-full rounded-[14px] border bg-[#F9FCFB] py-3.5 pl-10 pr-4
+                        w-full rounded-[14px] border bg-[#F9FCFB] py-3.5 pl-11 pr-10
                         text-[15px] text-[#0F1F1B] placeholder:text-[#A8BFBA]
                         outline-none transition-all duration-200
                         ${confirmed
